@@ -1,0 +1,39 @@
+name: CDC Vaccination
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow every day at 12am EST
+  schedule:
+    - cron: '0 5 * * *'
+  
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "scrape":
+  scrape:
+    # The type of computer that the job will run on
+    runs-on: ubuntu-latest
+    
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: -o ${{ steps.date.outputs.date }}.json https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData\?id\=vaccination_demographics_data
+          
+      # Commit the newly generated data aggregate to this repository (and potentially schema
+      # auto-updates like job role groups)
+      - name: Commit data aggregate
+        uses: EndBug/add-and-commit@v6
+        with:
+          add: '.'
+          message: Automatic data aggregate update via GitHub Actions
