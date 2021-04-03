@@ -28,7 +28,7 @@ jobs:
       - name: curl
         uses: wei/curl@master
         with:
-          args: -o ${{ steps.date.outputs.date }}.json https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData\?id\=vaccination_demographics_data
+          args: -o vaccination_demographics_data/${{ steps.date.outputs.date }}.json https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData\?id\=vaccination_demographics_data
           
       # Commit the newly generated data aggregate to this repository (and potentially schema
       # auto-updates like job role groups)
