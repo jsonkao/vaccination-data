@@ -35,6 +35,11 @@ jobs:
         with:
           args: -o georgia/${{ steps.date.outputs.date }}.html https://dph.georgia.gov/locations/covid-vaccination-site
 
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: -o texas/${{ steps.date.outputs.date }}.csv https://genesis.soc.texas.gov/files/accessibility/vaccineprovideraccessibilitydata.csv
+
       # Commit the newly generated data aggregate to this repository (and potentially schema
       # auto-updates like job role groups)
       - name: Commit data aggregate
