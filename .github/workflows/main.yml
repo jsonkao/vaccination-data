@@ -29,11 +29,16 @@ jobs:
         uses: wei/curl@master
         with:
           args: -o vaccination_demographics_data/${{ steps.date.outputs.date }}.json https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData\?id\=vaccination_demographics_data
-          
+    
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: -o georgia/${{ steps.date.outputs.date }}.json https://dph.georgia.gov/locations/covid-vaccination-site
+
       # Commit the newly generated data aggregate to this repository (and potentially schema
       # auto-updates like job role groups)
       - name: Commit data aggregate
         uses: EndBug/add-and-commit@v6
         with:
           add: '.'
-          message: Automatic data aggregate update via GitHub Actions
+          message: Vaccine data update via GitHub Actions
