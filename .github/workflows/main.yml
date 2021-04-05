@@ -33,7 +33,7 @@ jobs:
       - name: curl
         uses: wei/curl@master
         with:
-          args: -o georgia/${{ steps.date.outputs.date }}.json https://dph.georgia.gov/locations/covid-vaccination-site
+          args: -o georgia/${{ steps.date.outputs.date }}.html https://dph.georgia.gov/locations/covid-vaccination-site
 
       # Commit the newly generated data aggregate to this repository (and potentially schema
       # auto-updates like job role groups)
