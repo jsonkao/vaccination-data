@@ -34,6 +34,12 @@ jobs:
         with:
           args: -o texas/${{ steps.date.outputs.date }}.csv https://genesis.soc.texas.gov/files/accessibility/vaccineprovideraccessibilitydata.csv
 
+      # Texas vaccination data
+      - name: curl
+        uses: wei/curl@master
+        with:
+          args: -o texas/${{ steps.date.outputs.date }}.xls https://www.dshs.texas.gov/immunize/covid19/COVID-19-Vaccine-Data-by-County.xls
+
       # Louisiana demographics data
       - name: curl
         uses: wei/curl@master
