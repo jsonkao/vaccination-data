@@ -1,0 +1,45 @@
+---
+title: "Known race and ethnicities across states"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggrepel)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data
+
+```{r}
+kffData <- read.csv('../kff_raw_data.csv', skip = 2) %>% 
+  filter(row_number() <= n() - 21) %>% 
+  select(-Footnotes) %>% 
+  pivot_longer(!Location, names_to="date", values_to="value") %>% 
+  separate(date, c('date', 'category'), sep = "__") %>% 
+  filter(grepl('Known.Race', category) | grepl('Known.Ethnicity', category)) %>%
+  rename(state = Location) %>% 
+  mutate(date = as.Date(parse_datetime(date, format = 'as.of.%B.%d..%Y'))) %>% 
+  mutate(value = as.numeric(value)) %>% 
+  mutate(category = if_else(grepl("Race", category), "race_known", 'ethnicity_known'))
+
+bbgData <- read.csv('../bloomberg/aggregate.csv') %>% 
+  mutate(date = as.Date(date)) %>% 
+  filter(!is.na(race_known) & date < "2021-03-01") %>% 
+  pivot_longer(c('race_known', 'ethnicity_known'), names_to = "category", values_to = "value")
+
+data <- rbind(bbgData, kffData)
+```
+
+## Merge with BBG data to get the February perspective
+
+```{r}
+data %>% 
+  filter(category == 'ethnicity_known') %>% 
+  ggplot(aes(date, value, color = category)) +
+  geom_line() +
+  geom_point() +
+  geom_text_repel(aes(label = round(value * 100))) +
+  facet_wrap(~ state)
+```
+
