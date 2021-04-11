@@ -1,0 +1,36 @@
+---
+title: "KFF Data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(ggrepel)
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Data
+
+```{r}
+data <- read.csv('../raw_data.csv', skip = 2) %>% 
+  filter(row_number() <= n() - 21) %>% 
+  select(-Footnotes) %>% 
+  pivot_longer(!Location, names_to="date", values_to="value") %>% 
+  separate(date, c('date', 'category'), sep = "__")
+```
+
+```{r}
+data %>% 
+  filter(grepl('known.race', category, ignore.case = T)) %>% 
+  rename(state = Location) %>% 
+  mutate(date = parse_datetime(date, format = 'as.of.%B.%d..%Y')) %>% 
+  mutate(value = as.numeric(value)) %>% 
+  mutate(category = if_else(grepl("Unknown", category), "unknown", 'known')) %>% 
+  filter(category == 'unknown') %>% 
+  ggplot(aes(date, value, color = category)) +
+  geom_line() +
+  geom_point() +
+  geom_text_repel(aes(label = value)) +
+  facet_wrap(~ state)
+```
+
