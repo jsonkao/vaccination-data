@@ -6,6 +6,7 @@ output: html_document
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(ggrepel)
+library(cowplot)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -42,4 +43,50 @@ data %>%
   geom_text_repel(aes(label = round(value * 100))) +
   facet_wrap(~ state)
 ```
+
+## How many states reported R/E data on February 17?
+
+```{r}
+bbgData %>% 
+  filter(!is.na(value)) %>% 
+  pull(state) %>% 
+  unique() %>% 
+  length()
+```
+
+
+
+
+## Figures for the paper
+
+Bar chart of most recent state race known rates
+```{r}
+gen_state_chart <- function(measure) {
+  data %>%
+    filter(date == "2021-04-05") %>%
+    filter(category == paste0(measure, "_known")) %>%
+    arrange(!is.na(value), value) %>%
+    mutate(state = factor(state, levels = state)) %>%
+    ggplot(aes(state, value)) +
+    geom_col() +
+    coord_flip() +
+    scale_y_continuous(
+    labels = scales::percent,
+    position = "right",
+    limits = c(0, 1),
+    expand = c(0, 0)
+    ) +
+    theme(axis.title = element_blank(), plot.margin = unit(c(5.5, 15, 5.5, 0), "points"), axis.text = element_text(size = 10), plot.subtitle = element_text(size = 12)) +
+    labs(subtitle = paste0('Percent of vaccination records\nwith ', measure, ' known as of\nApril 5, 2021 by state'))
+}
+
+ggsave(
+  "../figures/state_measures.png",
+  plot_grid(gen_state_chart('race'), gen_state_chart('ethnicity')),
+  width = 8,
+  height = 9,
+  units = "in"
+)
+```
+
 
