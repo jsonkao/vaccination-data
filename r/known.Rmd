@@ -36,12 +36,15 @@ data <- rbind(bbgData, kffData)
 
 ```{r}
 data %>% 
-  filter(category == 'ethnicity_known') %>% 
+  filter(category == 'race_known') %>% 
+  filter(state %in% c("Arizona", 'New Jersey', 'North Carolina', 'Texas')) %>% 
   ggplot(aes(date, value, color = category)) +
   geom_line() +
   geom_point() +
-  geom_text_repel(aes(label = round(value * 100))) +
-  facet_wrap(~ state)
+  scale_y_continuous(labels = scales::percent, limits = c(0, 1)) +
+  labs(y = '') +
+  # geom_text_repel(aes(label = round(value * 100))) +
+  facet_wrap(~ state, ncol = 4)
 ```
 
 ## How many states reported R/E data on February 17?
@@ -53,9 +56,6 @@ bbgData %>%
   unique() %>% 
   length()
 ```
-
-
-
 
 ## Figures for the paper
 
@@ -80,7 +80,7 @@ gen_state_chart <- function(measure) {
     labs(subtitle = paste0('Percent of vaccination records\nwith ', measure, ' known as of\nApril 5, 2021 by state'))
 }
 
-ggsave(
+gggsave(
   "../figures/state_measures.png",
   plot_grid(gen_state_chart('race'), gen_state_chart('ethnicity')),
   width = 8,
