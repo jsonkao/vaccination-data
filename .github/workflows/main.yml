@@ -22,11 +22,7 @@ jobs:
         with:
           args: -o vaccination_demographics_data/${{ steps.date.outputs.date }}.json https://covid.cdc.gov/covid-data-tracker/COVIDData/getAjaxData\?id\=vaccination_demographics_data
     
-      # Georgia vaccination sites
-      - name: curl
-        uses: wei/curl@master
-        with:
-          args: -o georgia/${{ steps.date.outputs.date }}.html https://dph.georgia.gov/locations/covid-vaccination-site
+      # Georgia vaccination sites; appears to have moved to vaccines.gov, which is powered by VaccineFinder
 
       # Texas providers
       - name: curl
